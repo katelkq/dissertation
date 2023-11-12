@@ -164,4 +164,8 @@ data/meta.bin
 
 # datasets
 data/
-models/resnet50-19c8e357.pth
+
+models/retinanet/retinanet_model_10.pth
+models/retinanet_model_10.pth
+models/resnet50/resnet50-19c8e357.pth
+models/retinanet/resnext50_32x4d_fpn.pth
