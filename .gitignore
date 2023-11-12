@@ -159,9 +159,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# random files
 .DS_Store
-data/meta.bin
 
 # datasets
 data/
-models/resnet50-19c8e357.pth
+
+# downloaded models
+models/resnet50/resnet50-19c8e357.pth
