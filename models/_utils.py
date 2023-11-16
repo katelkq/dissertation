@@ -2,12 +2,23 @@ import functools
 import inspect
 import warnings
 from collections import OrderedDict
-from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
+from typing import Any, Callable, Dict, Optional, Sequence, Tuple, TypeVar, Union
 
 from torch import nn
 
-from _utils import sequence_to_str
-from models._api import WeightsEnum
+from weights.weights import WeightsEnum
+
+
+def sequence_to_str(seq: Sequence, separate_last: str = "") -> str:
+    if not seq:
+        return ""
+    if len(seq) == 1:
+        return f"'{seq[0]}'"
+
+    head = "'" + "', '".join([str(item) for item in seq[:-1]]) + "'"
+    tail = f"{'' if separate_last and len(seq) == 2 else ','} {separate_last}'{seq[-1]}'"
+
+    return head + tail
 
 
 class IntermediateLayerGetter(nn.ModuleDict):
