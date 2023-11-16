@@ -165,8 +165,8 @@ cython_debug/
 # datasets
 data/
 
-# downloaded models
-models/resnet50/resnet50-19c8e357.pth
-models/retinanet_model_10.pth
-models/retinanet/resnext50_32x4d_fpn.pth
-models/retinanet/retinanet_model_10.pth
+# downloaded models and weights
+weights/
+
+# predictions
+predictions/

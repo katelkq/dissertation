@@ -1,5 +1,5 @@
 """
-this is adapted from the official implementation at https://pytorch.org/vision/stable/_modules/torchvision/datasets/imagenet.html#ImageNet
+This is adapted from the official implementation at https://github.com/pytorch/vision/blob/main/torchvision/datasets/imagenet.py
 """
 
 import os
@@ -28,13 +28,13 @@ class ImageNet(ImageFolder):
     .. note::
         Before using this class, it is required to download ImageNet 2012 dataset from
         `here <https://image-net.org/challenges/LSVRC/2012/2012-downloads.php>`_ and
-        place the files ``ILSVRC2012_devkit_t12.tar.gz`` and ``ILSVRC2012_img_train.tar``
+        place the files ``ILSVRC2012_devkit_t12.tar`` and ``ILSVRC2012_img_train.tar``
         or ``ILSVRC2012_img_val.tar`` based on ``split`` in the root directory.
 
     Args:
         root (string): Root directory of the ImageNet Dataset.
         split (string, optional): The dataset split, supports ``train``, or ``val``.
-        transform (callable, optional): A function/transform that takes in an PIL image
+        transform (callable, optional): A function/transform that  takes in an PIL image
             and returns a transformed version. E.g, ``transforms.RandomCrop``
         target_transform (callable, optional): A function/transform that takes in the
             target and transforms it.

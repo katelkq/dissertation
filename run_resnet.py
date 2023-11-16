@@ -1,44 +1,33 @@
-from models.resnet50.resnet50 import resnet50
-from datasets.imagenet import ImageNet
-
 import torch
-from torch.utils.data import Dataset
-from torchvision import transforms
-import matplotlib.pyplot as plt
+
+from models.resnet import resnet50, ResNet50_Weights
+from models.vision_transformer import vit_b_16, ViT_B_16_Weights
+
+from datasets.imagenet import ImageNet
+from torch.utils.data import DataLoader
 
 import time
 
-import torch
-import torch.nn as nn
-import torch.nn.parallel
-import torch.backends.cudnn as cudnn
-import torch.distributed as dist
-import torch.optim
-import torch.utils.data
-import torch.utils.data.distributed
-import torchvision.transforms as transforms
-import torchvision.datasets as datasets
-import torchvision.models as models
+if torch.backends.mps.is_available():
+    device = torch.device('mps')
 
+else:
+    device = torch.device('cpu')
+        
+
+# Move your model to mps just like any other device
+weights = ViT_B_16_Weights.DEFAULT
+preprocess = weights.transforms()
+model = vit_b_16(weights=weights)
+model.to(device)
 
 dataset = ImageNet(
     root='./data/imagenet',
     split='val',
-    transform=transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])
+    transform=preprocess
 )
 
-model = resnet50()
-
-dataloader = torch.utils.data.DataLoader(
-    dataset=dataset
-)
-
-criterion = nn.CrossEntropyLoss()
+dataloader = DataLoader(dataset=dataset)
 
 def accuracy(output, target, topk=(1,)):
     """Computes the accuracy over the k top predictions for the specified values of k"""
@@ -56,12 +45,11 @@ def accuracy(output, target, topk=(1,)):
             res.append(correct_k.mul_(100.0 / batch_size))
         return res
 
-def validate(val_loader, model, criterion):
+def validate(val_loader, model):
     batch_time = AverageMeter('Time', ':6.3f')
-    losses = AverageMeter('Loss', ':.4e')
-    top1 = AverageMeter('Acc@1', ':6.2f')
-    top5 = AverageMeter('Acc@5', ':6.2f')
-    progress = ProgressMeter(len(val_loader), batch_time, losses, top1, top5,
+    top1 = AverageMeter('Acc@1', ':6.3f')
+    top5 = AverageMeter('Acc@5', ':6.3f')
+    progress = ProgressMeter(len(val_loader), batch_time, top1, top5,
                              prefix='Test: ')
 
     # switch to evaluate mode
@@ -70,14 +58,15 @@ def validate(val_loader, model, criterion):
     with torch.no_grad():
         end = time.time()
         for i, (images, target) in enumerate(val_loader):
+            if torch.backends.mps.is_available():
+                images = images.to('mps')
+                target = target.to('mps')
 
             # compute output
             output = model(images)
-            loss = criterion(output, target)
 
             # measure accuracy and record loss
             acc1, acc5 = accuracy(output, target, topk=(1, 5))
-            losses.update(loss.item(), images.size(0))
             top1.update(acc1[0], images.size(0))
             top5.update(acc5[0], images.size(0))
 
@@ -85,7 +74,7 @@ def validate(val_loader, model, criterion):
             batch_time.update(time.time() - end)
             end = time.time()
 
-            if i % 10 == 0:
+            if i % 100 == 0:
                 progress.print(i)
 
         # TODO: this should also be done with the ProgressMeter
@@ -134,4 +123,4 @@ class ProgressMeter(object):
         fmt = '{:' + str(num_digits) + 'd}'
         return '[' + fmt + '/' + fmt.format(num_batches) + ']'
 
-validate(dataloader, model, criterion)
+validate(dataloader, model)
