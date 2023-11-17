@@ -168,5 +168,8 @@ data/
 # downloaded models and weights
 weights/
 
+# execution logs
+logs/
+
 # predictions
 predictions/
