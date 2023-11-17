@@ -21,12 +21,12 @@ else:
 def main(args=None):
     parser = argparse.ArgumentParser(description='Simple training script for training a RetinaNet network.')
 
-    parser.add_argument('--coco_path', help='Path to COCO directory')
+    parser.add_argument('--data_path', help='Path to COCO directory', type=str)
     parser.add_argument('--model_path', help='Path to model', type=str)
 
     parser = parser.parse_args(args)
 
-    dataset = CocoDataset(parser.coco_path, set_name='val2017',
+    dataset = CocoDataset(parser.data_path, set_name='val2017',
                               transform=transforms.Compose([Normalizer(), Resizer()]))
 
     # Create the model

@@ -16,7 +16,7 @@ from torchvision.datasets.utils import check_integrity, extract_archive, verify_
 ARCHIVE_META = {
     "train": ("ILSVRC2012_img_train.tar", "1d675b47d978889d74fa0da5fadfb00e"),
     "val": ("ILSVRC2012_img_val.tar", "29b22e2961454d5413ddabcf34fc5622"),
-    "devkit": ("ILSVRC2012_devkit_t12.tar", "f528ebd8bc4f49562e3297c4dfd3b0f0"),
+    "devkit": ("ILSVRC2012_devkit_t12.tar.gz", "fa75699e90414af021442c21a62c3abf"),
 }
 
 META_FILE = "meta.bin"

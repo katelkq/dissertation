@@ -15,7 +15,6 @@ else:
     device = torch.device('cpu')
         
 
-# Move your model to mps just like any other device
 weights = ViT_B_16_Weights.DEFAULT
 preprocess = weights.transforms()
 model = vit_b_16(weights=weights)
