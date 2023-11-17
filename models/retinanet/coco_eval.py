@@ -2,6 +2,8 @@ from pycocotools.cocoeval import COCOeval
 import json
 import torch
 
+import logging
+logging.basicConfig(filename='./logs/retinanet.log', filemode='a', format='%(asctime)s,%(message)s', level=logging.INFO)
 
 def evaluate_coco(dataset, model, threshold=0.05):
     
@@ -25,7 +27,10 @@ def evaluate_coco(dataset, model, threshold=0.05):
                 device = torch.device('cpu')
 
             # run network
+            logging.info(f'{index},start')
             scores, labels, boxes = model(data['img'].permute(2, 0, 1).to(device).float().unsqueeze(dim=0))
+            logging.info(f'{index},end')
+
             scores = scores.cpu()
             labels = labels.cpu()
             boxes  = boxes.cpu()
