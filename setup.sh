@@ -12,3 +12,7 @@ wget -P ./data/coco http://images.cocodataset.org/zips/val2017.zip
 wget -P ./data/coco http://images.cocodataset.org/annotations/annotations_trainval2017.zip
 
 unzip ./data/coco/val2017.zip -d ./data/coco
+unzip ./data/coco/annotations_trainval2017.zip -d ./data/coco
+
+rm ./data/coco/val2017.zip
+rm ./data/coco/annotations_trainval2017.zip
