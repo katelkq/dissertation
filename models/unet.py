@@ -1,9 +1,10 @@
 from collections import OrderedDict
+from functools import partial
 
 import torch
 import torch.nn as nn
 
-
+from weights.weights import Weights, WeightsEnum
 class UNet(nn.Module):
 
     def __init__(self, in_channels=3, out_channels=1, init_features=32):
@@ -96,3 +97,24 @@ class UNet(nn.Module):
                 ]
             )
         )
+
+class UNet_Weights(WeightsEnum):
+    IMAGENET1K_V1 = Weights(
+        url="https://download.pytorch.org/models/resnet50-0676ba61.pth",
+        transforms=partial(ImageClassification, crop_size=224),
+        meta={
+            **_COMMON_META,
+            "num_params": 25557032,
+            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#resnet",
+            "_metrics": {
+                "ImageNet-1K": {
+                    "acc@1": 76.130,
+                    "acc@5": 92.862,
+                }
+            },
+            "_ops": 4.089,
+            "_file_size": 97.781,
+            "_docs": """These weights reproduce closely the results of the paper using a simple training recipe.""",
+        },
+    )
+    DEFAULT = IMAGENET1K_V1

@@ -14,9 +14,6 @@ if torch.backends.mps.is_available():
 else:
     device = torch.device('cpu')
         
-import logging
-logging.basicConfig(filename='./logs/resnet.log', filemode='a', format='%(asctime)s - %(message)s', level=logging.INFO)
-
 weights = ResNet50_Weights.DEFAULT
 preprocess = weights.transforms()
 model = resnet50(weights=weights)
@@ -63,12 +60,8 @@ def validate(val_loader, model):
                 images = images.to('mps')
                 target = target.to('mps')
 
-            logging.info(f'Generating prediction for image #{i}...')
-
             # compute output
             output = model(images)
-
-            logging.info(f'Prediction generated.')
 
             # measure accuracy and record loss
             acc1, acc5 = accuracy(output, target, topk=(1, 5))

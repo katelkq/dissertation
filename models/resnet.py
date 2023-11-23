@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from transforms._presets import ImageClassification
+from transforms.transforms import ImageClassification
 from weights.weights import Weights, WeightsEnum
 from models._meta import _IMAGENET_CATEGORIES
 from models._utils import _ovewrite_named_param
