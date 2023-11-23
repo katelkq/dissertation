@@ -166,10 +166,13 @@ cython_debug/
 data/
 
 # downloaded models and weights
-weights/
+
 
 # execution logs
 logs/
 
 # predictions
 predictions/
+weights/coco_resnet_50_map_0_335_state_dict.pt
+weights/unet.pt
+weights/resnet50-19c8e357.pth
