@@ -13,11 +13,8 @@ import logging
 logging.basicConfig(filename=f'./logs/{timestamp}.log',
                     filemode='w',
                     level='INFO',
-                    format='%(asctime)s,%(message)s')
-
-
-
-
+                    format='%(asctime)s.%(msecs)06d,%(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
 
 import models.resnet
 import datasets.random
