@@ -54,7 +54,7 @@ def initialize_model(model_name: str, random_weights: bool):
 def initialize_dataloader(dataset_name: str, random_inputs: bool, preprocess: Callable, batch_size):
     # batch size, 
     if random_inputs:
-        dataset = datasets.random.RandomDataGenerator(size=(3,224,224), num_samples=10000)
+        dataset = datasets.random.RandomDataGenerator(size=(3,224,224), num_samples=100)
     else:
         raise KeyError('Not yet implemented.')
     
