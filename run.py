@@ -7,13 +7,6 @@
 
 """
 from datetime import datetime
-
-import models.resnet
-import datasets.random
-from torch.utils.data import DataLoader
-
-from typing import Any, Callable, Dict, Mapping
-
 timestamp = '_'.join(str(datetime.now()).split('.')[0].split())
 
 import logging
@@ -21,6 +14,17 @@ logging.basicConfig(filename=f'./logs/{timestamp}.log',
                     filemode='w',
                     level='INFO',
                     format='%(asctime)s,%(message)s')
+
+
+
+
+
+import models.resnet
+import datasets.random
+from torch.utils.data import DataLoader
+
+from typing import Any, Callable, Dict, Mapping
+logging.info('script starts')
 
 import torch
 
@@ -90,3 +94,5 @@ with torch.no_grad():
         logging.info('prediction starts')
         outputs = model(inputs)
         logging.info('prediction ends')
+
+logging.info('script ends')
