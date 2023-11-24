@@ -28,6 +28,8 @@ logging.info('script starts')
 
 import torch
 
+import time
+
 def initialize_model(model_name: str, random_weights: bool):
     """
     models
@@ -89,10 +91,12 @@ model, dataloader = initialize(model_name='resnet50',
 
 model.eval()
 with torch.no_grad():
+    time.sleep(5)
     for i, (inputs, targets) in enumerate(dataloader):
         # do we want to move the input to another device?
         logging.info('prediction starts')
         outputs = model(inputs)
         logging.info('prediction ends')
+    time.sleep(5)
 
 logging.info('script ends')
