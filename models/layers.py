@@ -10,13 +10,13 @@ avgpool_layer = nn.AvgPool2d(kernel_size=2, stride=2)  # Example with a 2x2 kern
 # Linear layer
 linear_layer = nn.Linear(in_features=100, out_features=50)  # Example with 100 input features and 50 output features
 
-# Convolutional layer (2D)
-conv2d_layer = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1)
-# Example: 3 input channels, 16 output channels, 3x3 kernel size, 1 stride, and 1 padding
-
 # Convolutional layer (1D)
 conv1d_layer = nn.Conv1d(in_channels=1, out_channels=16, kernel_size=3, stride=1, padding=1)
 # Example: 1 input channel, 16 output channels, 3 kernel size, 1 stride, and 1 padding
+
+# Convolutional layer (2D)
+conv2d_layer = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1)
+# Example: 3 input channels, 16 output channels, 3x3 kernel size, 1 stride, and 1 padding
 
 # Deconvolution (2D)
 deconv2d_layer = nn.ConvTranspose2d(in_channels=16, out_channels=3, kernel_size=3, stride=2, padding=1, output_padding=1)

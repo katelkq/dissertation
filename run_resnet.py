@@ -15,13 +15,15 @@ else:
     device = torch.device('cpu')
         
 weights = ResNet50_Weights.DEFAULT
+
+print(type(weights))
+
 preprocess = weights.transforms()
 model = resnet50(weights=weights)
 model.to(device)
 
 dataset = ImageNet(
     root='./data/imagenet',
-    split='val',
     transform=preprocess
 )
 

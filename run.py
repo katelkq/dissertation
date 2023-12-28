@@ -24,7 +24,6 @@ from typing import Any, Callable, Dict, Mapping
 logging.info('script starts')
 
 import torch
-
 import time
 
 def initialize_model(model_name: str, random_weights: bool):
@@ -85,6 +84,7 @@ model, dataloader = initialize(model_name='resnet50',
                                random_weights=False,
                                random_inputs=True,
                                batch_size=1)
+
 
 model.eval()
 with torch.no_grad():

@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import Dataset
 
 class RandomDataGenerator(Dataset):
-    def __init__(self, size=(10, 10), num_samples=100):
+    def __init__(self, size=(10,10), num_samples=100, pregenerated=False):
         self.size = size
         self.num_samples = num_samples
 
