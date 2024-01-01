@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from functools import partial
+from typing import Any, Callable, List, Optional, Type, Union
 
 import torch
 import torch.nn as nn
@@ -98,23 +99,23 @@ class UNet(nn.Module):
             )
         )
 
+
 class UNet_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/resnet50-0676ba61.pth",
-        transforms=partial(ImageClassification, crop_size=224),
+    TCGA_LGG = Weights(
+        url=None,
+        transforms=None,
         meta={
-            **_COMMON_META,
-            "num_params": 25557032,
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#resnet",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 76.130,
-                    "acc@5": 92.862,
-                }
-            },
-            "_ops": 4.089,
-            "_file_size": 97.781,
-            "_docs": """These weights reproduce closely the results of the paper using a simple training recipe.""",
-        },
+            "_docs": 'These weights are obtained from <https://github.com/mateuszbuda/brain-segmentation-pytorch/tree/master>.'
+        }
     )
-    DEFAULT = IMAGENET1K_V1
+    DEFAULT = TCGA_LGG
+
+
+def unet(*, weights: Optional[UNet_Weights] = None) -> UNet:
+
+    model = UNet()
+
+    if weights is not None:
+        model.load_state_dict(weights.get_state_dict(path='./weights/unet.pt'))
+
+    return model

@@ -3,6 +3,7 @@ from enum import Enum
 from functools import partial
 from typing import Any, Callable, Dict, Mapping
 
+from torch import load
 from torch.hub import load_state_dict_from_url
 
 @dataclass
@@ -75,7 +76,11 @@ class WeightsEnum(Enum):
         return obj
 
     def get_state_dict(self, *args: Any, **kwargs: Any) -> Mapping[str, Any]:
-        return load_state_dict_from_url(self.url, *args, **kwargs)
+        # provide the path to the weights file if it is only available locally
+        if self.url:
+            return load_state_dict_from_url(self.url, *args, **kwargs)
+        else:
+            return load(kwargs['path'])
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}.{self._name_}"

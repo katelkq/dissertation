@@ -8,9 +8,12 @@ from torch.utils.data import DataLoader
 
 from models.layers import maxpool2d, avgpool2d, linear, conv1d, conv2d, deconv2d, relu, softmax
 from models.resnet import resnet50, ResNet50_Weights
+from models.unet import unet, UNet_Weights
+from models.vision_transformer import vit_b_16, ViT_B_16_Weights
 
-from datasets.random import RandomDataGenerator
 from datasets.imagenet import ImageNet
+from datasets.lgg import BrainSegmentationDataset
+from datasets.random import RandomDataGenerator
 
 SUPPORTED_LAYERS = {
     'maxpool2d': {
@@ -57,10 +60,9 @@ SUPPORTED_LAYERS = {
 
 SUPPORTED_MODELS = {
     # include: model constructors, weights, input dimensions, preprocessing 
-    
 
     # TODO: transformer, vision transformer, patch embed
-    # actually, use the class name directly?
+
     'resnet50': {
         'constructor': resnet50,
         'dataset': 'imagenet',
@@ -68,17 +70,27 @@ SUPPORTED_MODELS = {
         'input-shape': (3,224,224)
     },
     'unet': {
-
+        'constructor': unet,
+        'dataset': 'lgg',
+        'weights': UNet_Weights.DEFAULT,
+        'input-shape': (3,256,256)
     },
     'vit': {
-        'dataset': 'imagenet'
+        'constructor': vit_b_16,
+        'dataset': 'imagenet',
+        'weights': ViT_B_16_Weights.DEFAULT,
+        'input-shape': (3,224,224)
     }
 }
 
 SUPPORTED_DATASETS = {
     'imagenet': {
         'constructor': ImageNet,
-        'transform': ResNet50_Weights.DEFAULT.transforms(),
+        'default-path': './data/imagenet'
+    },
+    'lgg': {
+        'constructor': BrainSegmentationDataset,
+        'default-path': './data/kaggle_3m'
     }
 }
 
@@ -178,6 +190,11 @@ def get_args():
         help='if you want to generate random dataset, how many samples do you want to generate?',
     )
     parser.add_argument(
+        '--dims',
+        type=int,
+        help='if you want to generate random dataset, how many samples do you want to generate?',
+    )
+    parser.add_argument(
         '--input-shape',
         type=int,
         nargs='+',
@@ -218,7 +235,7 @@ def initialize_dataloader(args, device):
         if args.real_data:
             dataset_info = SUPPORTED_DATASETS[model_info['dataset']]
             dataset = dataset_info['constructor'](root=args.data_path if args.data_path else dataset_info['default-path'], 
-                                                transform=dataset_info['transform'])
+                                                  transform=model_info['weights'].transforms() if callable(model_info['weights'].transforms) else model_info['weights'].transforms)
         else:
             dataset = RandomDataGenerator(shape=model_info['input-shape'], num_samples=args.num_samples)
     else:
@@ -262,5 +279,5 @@ def main():
             time.sleep(1)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

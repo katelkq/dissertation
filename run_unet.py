@@ -74,7 +74,7 @@ def main(args):
 
 def data_loader(args):
     dataset = Dataset(
-        images_dir=args.images,
+        root=args.images,
         subset="validation",
         image_size=args.image_size,
         random_sampling=False,

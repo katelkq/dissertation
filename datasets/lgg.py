@@ -17,10 +17,10 @@ class BrainSegmentationDataset(Dataset):
 
     def __init__(
         self,
-        images_dir,
+        root,
         transform=None,
         image_size=256,
-        subset="train",
+        subset="validation",
         random_sampling=True,
         validation_cases=10,
         seed=42,
@@ -31,7 +31,7 @@ class BrainSegmentationDataset(Dataset):
         volumes = {}
         masks = {}
         print("reading {} images...".format(subset))
-        for (dirpath, dirnames, filenames) in os.walk(images_dir):
+        for (dirpath, dirnames, filenames) in os.walk(root):
             image_slices = []
             mask_slices = []
             for filename in sorted(
