@@ -190,7 +190,7 @@ def get_args():
         help='if you want to generate random dataset, how many samples do you want to generate?',
     )
     parser.add_argument(
-        '--dims',
+        '--dim',
         type=int,
         help='if you want to generate random dataset, how many samples do you want to generate?',
     )
