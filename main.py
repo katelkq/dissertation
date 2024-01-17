@@ -156,7 +156,7 @@ def get_args():
     parser.add_argument(
         '--num-samples',
         type=int,
-        default=10,
+        default=100,
         help='if you want to generate random dataset, how many samples do you want to generate?',
     )
     parser.add_argument(
@@ -264,15 +264,14 @@ def main():
     n = len(dataloader)
     freq = n // 10
 
+    time.sleep(5)
+
     # start of the inference loop
     model.eval()
     with torch.no_grad():
         for i, (inputs, targets) in enumerate(dataloader):
             # do we want to move the input to another device?
             inputs = inputs.to(device)
-
-            if i % freq == 0:
-                print(f'[{i}/{n}]')
 
             time.sleep(1)
             outputs = model(inputs)
