@@ -263,9 +263,7 @@ def main():
 
     n = len(dataloader)
     freq = n // 10
-
-    time.sleep(5)
-
+    
     # start of the inference loop
     model.eval()
     with torch.no_grad():
@@ -273,7 +271,7 @@ def main():
             # do we want to move the input to another device?
             inputs = inputs.to(device)
 
-            time.sleep(1)
+            time.sleep(2)
             outputs = model(inputs)
             time.sleep(1)
 
