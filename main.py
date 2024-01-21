@@ -6,6 +6,9 @@ from typing import Tuple
 import torch
 from torch.utils.data import DataLoader
 
+from torchvision.models.detection import retinanet_resnet50_fpn, RetinaNet_ResNet50_FPN_Weights
+from torchvision.datasets import CocoDetection
+
 from models.layers import maxpool2d, avgpool2d, linear, conv1d, conv2d, deconv2d, relu, softmax
 from models.resnet import resnet50, ResNet50_Weights
 from models.unet import unet, UNet_Weights
@@ -80,6 +83,12 @@ SUPPORTED_MODELS = {
         'dataset': 'imagenet',
         'weights': ViT_B_16_Weights.DEFAULT,
         'input-shape': (3,224,224)
+    },
+    'retinanet': {
+        'constructor': retinanet_resnet50_fpn,
+        'dataset': 'coco',
+        'weights': RetinaNet_ResNet50_FPN_Weights.DEFAULT,
+        'input-shape': (3,256,256)
     }
 }
 
@@ -91,6 +100,10 @@ SUPPORTED_DATASETS = {
     'lgg': {
         'constructor': BrainSegmentationDataset,
         'default-path': './data/kaggle_3m'
+    },
+    'coco': {
+        'constructor': CocoDetection,
+        'default-path': './data/coco'
     }
 }
 
@@ -201,8 +214,6 @@ def get_args():
         help='if you want to generate random dataset, how many samples do you want to generate?',
     )
 
-    
-
     args = parser.parse_args()
     return args
 
@@ -219,6 +230,7 @@ def initialize_model(args, device):
     else:
         model_info = SUPPORTED_LAYERS[args.model]
         kwargs = {key: vars(args)[key] for key in model_info['kwargs'] if vars(args)[key]}
+        
         if kwargs:
             model = model_info['constructor'](**kwargs)
         else:
