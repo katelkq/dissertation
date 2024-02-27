@@ -1,6 +1,8 @@
 import argparse
 import time
 
+from torchprofile import profile_macs
+
 from typing import Tuple
 
 import torch
@@ -230,7 +232,7 @@ def initialize_model(args, device):
     else:
         model_info = SUPPORTED_LAYERS[args.model]
         kwargs = {key: vars(args)[key] for key in model_info['kwargs'] if vars(args)[key]}
-        
+        print(kwargs)
         if kwargs:
             model = model_info['constructor'](**kwargs)
         else:
@@ -278,14 +280,17 @@ def main():
     
     # start of the inference loop
     model.eval()
+
     with torch.no_grad():
         for i, (inputs, targets) in enumerate(dataloader):
             # do we want to move the input to another device?
             inputs = inputs.to(device)
 
-            time.sleep(2)
-            outputs = model(inputs)
+            # print(profile_macs(model, inputs))
+
             time.sleep(1)
+            outputs = model(inputs)
+            time.sleep(0.5)
 
 
 if __name__ == '__main__':
