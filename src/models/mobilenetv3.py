@@ -5,8 +5,8 @@ import torch
 from torch import nn, Tensor
 from torchvision.ops.misc import Conv2dNormActivation, SqueezeExcitation as SElayer
 
-from ..transforms.transforms import ImageClassification
-from ..weights.weights import Weights, WeightsEnum
+from .transforms import ImageClassification
+from .weights import Weights, WeightsEnum
 from ._meta import _IMAGENET_CATEGORIES
 from ._utils import _make_divisible, _ovewrite_named_param, handle_legacy_interface
 

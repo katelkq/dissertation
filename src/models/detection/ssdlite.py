@@ -7,9 +7,9 @@ import torch
 from torch import nn, Tensor
 from torchvision.ops.misc import Conv2dNormActivation
 
-from ...transforms.transforms import ObjectDetection
+from ..transforms import ObjectDetection
 from .. import mobilenet
-from ...weights.weights import Weights, WeightsEnum
+from ..weights import Weights, WeightsEnum
 from .._meta import _COCO_CATEGORIES
 from .._utils import _ovewrite_value_param, handle_legacy_interface
 from ..mobilenetv3 import mobilenet_v3_large, MobileNet_V3_Large_Weights

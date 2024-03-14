@@ -5,7 +5,7 @@ from typing import Any, Callable, List, Optional, Type, Union
 import torch
 import torch.nn as nn
 
-from ..weights.weights import Weights, WeightsEnum
+from .weights import Weights, WeightsEnum
 
 class UNet(nn.Module):
 

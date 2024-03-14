@@ -6,7 +6,7 @@ from torchvision.ops import misc as misc_nn_ops
 from torchvision.ops.feature_pyramid_network import ExtraFPNBlock, FeaturePyramidNetwork, LastLevelMaxPool
 
 from .. import mobilenet, resnet
-from ...weights.weights import _get_enum_from_fn, WeightsEnum
+from ..weights import _get_enum_from_fn, WeightsEnum
 from .._utils import handle_legacy_interface, IntermediateLayerGetter
 
 

@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, Optional, Sequence, Tuple, TypeVar, Unio
 
 from torch import nn
 
-from ..weights.weights import WeightsEnum
+from .weights import WeightsEnum
 
 
 def sequence_to_str(seq: Sequence, separate_last: str = "") -> str:

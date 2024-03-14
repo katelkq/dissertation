@@ -7,8 +7,8 @@ import torch.nn.functional as F
 from torch import nn, Tensor
 from torchvision.ops import boxes as box_ops
 
-from ...transforms.transforms import ObjectDetection
-from ...weights.weights import register_model, Weights, WeightsEnum
+from ..transforms import ObjectDetection
+from ..weights import register_model, Weights, WeightsEnum
 from .._meta import _COCO_CATEGORIES
 from .._utils import _ovewrite_value_param, handle_legacy_interface
 from ..vgg import VGG, vgg16, VGG16_Weights

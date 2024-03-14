@@ -4,8 +4,8 @@ import torch
 from torch import nn
 from torchvision.ops import MultiScaleRoIAlign, misc as misc_nn_ops
 
-from ...transforms.transforms import ObjectDetection
-from ...weights.weights import register_model, Weights, WeightsEnum
+from ..transforms import ObjectDetection
+from ..weights import register_model, Weights, WeightsEnum
 from .._meta import _COCO_PERSON_CATEGORIES, _COCO_PERSON_KEYPOINT_NAMES
 from .._utils import _ovewrite_value_param, handle_legacy_interface
 from ..resnet import resnet50, ResNet50_Weights

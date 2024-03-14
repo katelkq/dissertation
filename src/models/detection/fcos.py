@@ -9,8 +9,8 @@ from torch import nn, Tensor
 from torchvision.ops import boxes as box_ops, generalized_box_iou_loss, misc as misc_nn_ops, sigmoid_focal_loss
 from torchvision.ops.feature_pyramid_network import LastLevelP6P7
 
-from ...transforms.transforms import ObjectDetection
-from ...weights.weights import register_model, Weights, WeightsEnum
+from ..transforms import ObjectDetection
+from ..weights import register_model, Weights, WeightsEnum
 from .._meta import _COCO_CATEGORIES
 from .._utils import _ovewrite_value_param, handle_legacy_interface
 from ..resnet import resnet50, ResNet50_Weights

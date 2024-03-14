@@ -4,8 +4,8 @@ from typing import Any, cast, Dict, List, Optional, Union
 import torch
 import torch.nn as nn
 
-from ..transforms.transforms import ImageClassification
-from ..weights.weights import Weights, WeightsEnum
+from .transforms import ImageClassification
+from .weights import Weights, WeightsEnum
 from ._meta import _IMAGENET_CATEGORIES
 from ._utils import _ovewrite_named_param
 
