@@ -5,7 +5,8 @@ from typing import Any, Callable, List, Optional, Type, Union
 import torch
 import torch.nn as nn
 
-from weights.weights import Weights, WeightsEnum
+from ..weights.weights import Weights, WeightsEnum
+
 class UNet(nn.Module):
 
     def __init__(self, in_channels=3, out_channels=1, init_features=32):

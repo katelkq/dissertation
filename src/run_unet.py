@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 from datasets.lgg import BrainSegmentationDataset as Dataset
 from models.unet import UNet
-from utils import dsc, gray2rgb, outline
+from src.utils import dsc, gray2rgb, outline
 
 
 def main(args):

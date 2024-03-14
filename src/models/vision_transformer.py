@@ -5,12 +5,12 @@ from typing import Any, Callable, Dict, List, NamedTuple, Optional
 
 import torch
 import torch.nn as nn
-
 from torchvision.ops.misc import Conv2dNormActivation, MLP
-from transforms.transforms import ImageClassification, InterpolationMode
-from weights.weights import Weights, WeightsEnum
-from models._meta import _IMAGENET_CATEGORIES
-from models._utils import _ovewrite_named_param
+
+from ..transforms.transforms import ImageClassification, InterpolationMode
+from ..weights.weights import Weights, WeightsEnum
+from ._meta import _IMAGENET_CATEGORIES
+from ._utils import _ovewrite_named_param
 
 
 __all__ = [

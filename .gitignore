@@ -162,17 +162,11 @@ cython_debug/
 # random files
 .DS_Store
 
-# datasets
-data/
+# cached datasets
+datasets/
 
-# downloaded models and weights
-
-
-# execution logs
-logs/
-
-# predictions
-predictions/
-weights/coco_resnet_50_map_0_335_state_dict.pt
-weights/unet.pt
-weights/resnet50-19c8e357.pth
+# cached weights
+src/weights/coco_resnet_50_map_0_335_state_dict.pt
+src/weights/unet.pt
+src/weights/resnet50-19c8e357.pth
+datasets/coco/val2017.zip
