@@ -10,8 +10,10 @@ class Model(nn.Module):
             torch.manual_seed(seed)
 
         def init_weights(m):
+            for param in m.parameters():
+                nn.init.uniform_(param, -1, 1)
 
-            if isinstance(m, nn.Linear):
+            '''if isinstance(m, nn.Linear):
                 nn.init.uniform_(m.weight, -1, 1)
                 nn.init.uniform_(m.bias, -1, 1)
 
@@ -21,15 +23,19 @@ class Model(nn.Module):
                     nn.init.uniform_(m.bias, -1, 1)
 
             elif isinstance(m, nn.ConvTranspose1d) or isinstance(m, nn.ConvTranspose2d) or isinstance(m, nn.ConvTranspose3d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                nn.init.uniform_(m.weight, -1, 1)
                 if m.bias is not None:
                     nn.init.uniform_(m.bias, -1, 1)
-            
                 
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.BatchNorm1d) or isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.BatchNorm3d):
+                nn.init.uniform_(m.weight, -1, 1)
+                nn.init.uniform_(m.bias, -1, 1)
 
-            
+            elif isinstance(m, nn.LayerNorm):
+                nn.init.uniform_(m.weight, -1, 1)
+                nn.init.uniform_(m.bias, -1, 1)
+
+            elif isinstance(m, nn.MultiheadAttention):
+                pass'''
 
         self.apply(init_weights)

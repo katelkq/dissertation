@@ -5,8 +5,7 @@ from typing import Any, Callable, List, Optional, Type, Union
 import torch
 import torch.nn as nn
 from torch import Tensor
-
-from ._utils import _ovewrite_named_param
+from torchvision.models._utils import _ovewrite_named_param
 
 
 __all__ = [
