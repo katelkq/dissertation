@@ -1,4 +1,4 @@
-from config import RANDOM_SEED, MODEL_SPECS
+from config import MODEL_SPECS
 from datasets.random import RandomDataset
 
 import argparse
@@ -39,6 +39,13 @@ def get_args():
         help='the batch size of the dataloader',
     )
 
+    parser.add_argument(
+        '--seed',
+        type=int,
+        default=42,
+        help='the random seed value to use',
+    )
+
     args = parser.parse_args()
     return args
 
@@ -48,7 +55,7 @@ def initialize_model(args):
     get_model = specs['factory-method']
 
     model = get_model()
-    model.randomize_weights(seed=RANDOM_SEED)
+    model.randomize_weights(seed=args.seed)
 
     return model
 
@@ -57,7 +64,7 @@ def initialize_dataset(args):
     specs = MODEL_SPECS[args.model]
     input_shape = specs['input-shape']
 
-    dataset = RandomDataset(input_shape=input_shape, num_samples=args.num_samples, random_seed=RANDOM_SEED)
+    dataset = RandomDataset(input_shape=input_shape, num_samples=args.num_samples, seed=args.seed)
 
     return dataset
 
