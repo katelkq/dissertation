@@ -1,15 +1,15 @@
-from src.models.resnet import resnet50
+from src.models.unet import unet
 
 import torch
 
 def test_model_initialization():
-    assert resnet50()
+    assert unet()
 
 def test_weights_initialization():
-    model1 = resnet50()
+    model1 = unet()
     model1.randomize_weights(seed=42)
 
-    model2 = resnet50()
+    model2 = unet()
     model2.randomize_weights(seed=42)
 
     for param1, param2 in zip(model1.parameters(), model2.parameters()):

@@ -1,3 +1,6 @@
+from .model import Model
+from .resnet import resnet50
+
 import math
 import warnings
 from collections import OrderedDict
@@ -6,26 +9,18 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import torch
 from torch import nn, Tensor
-import torchvision.transforms.functional as F
 from torchvision.ops import boxes as box_ops, misc as misc_nn_ops, sigmoid_focal_loss
 from torchvision.ops.feature_pyramid_network import LastLevelP6P7
 
-from ..transforms import ObjectDetection
-from ..weights import Weights, WeightsEnum
-from .._meta import _COCO_CATEGORIES
-from .._utils import _ovewrite_value_param, handle_legacy_interface
-from ..resnet import resnet50, ResNet50_Weights
-from . import _utils as det_utils
-from ._utils import _box_loss, overwrite_eps
-from .anchor_utils import AnchorGenerator
-from .backbone_utils import _resnet_fpn_extractor, _validate_trainable_layers
-from .transform import GeneralizedRCNNTransform
+from torchvision.models.detection import _utils as det_utils
+from torchvision.models.detection._utils import _box_loss
+from torchvision.models.detection.anchor_utils import AnchorGenerator
+from torchvision.models.detection.backbone_utils import _resnet_fpn_extractor
+from torchvision.models.detection.transform import GeneralizedRCNNTransform
 
 
 __all__ = [
     "RetinaNet",
-    "RetinaNet_ResNet50_FPN_Weights",
-    "RetinaNet_ResNet50_FPN_V2_Weights",
     "retinanet_resnet50_fpn",
     "retinanet_resnet50_fpn_v2",
 ]
@@ -320,7 +315,7 @@ class RetinaNetRegressionHead(nn.Module):
         return torch.cat(all_bbox_regression, dim=1)
 
 
-class RetinaNet(nn.Module):
+class RetinaNet(Model):
     """
     Implements RetinaNet.
 
@@ -670,60 +665,9 @@ class RetinaNet(nn.Module):
         return self.eager_outputs(losses, detections)
 
 
-_COMMON_META = {
-    "categories": _COCO_CATEGORIES,
-    "min_size": (1, 1),
-}
-
-
-class RetinaNet_ResNet50_FPN_Weights(WeightsEnum):
-    COCO_V1 = Weights(
-        url="https://download.pytorch.org/models/retinanet_resnet50_fpn_coco-eeacb38b.pth",
-        transforms=ObjectDetection,
-        meta={
-            **_COMMON_META,
-            "num_params": 34014999,
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/detection#retinanet",
-            "_metrics": {
-                "COCO-val2017": {
-                    "box_map": 36.4,
-                }
-            },
-            "_ops": 151.54,
-            "_file_size": 130.267,
-            "_docs": """These weights were produced by following a similar training recipe as on the paper.""",
-        },
-    )
-    DEFAULT = COCO_V1
-
-
-class RetinaNet_ResNet50_FPN_V2_Weights(WeightsEnum):
-    COCO_V1 = Weights(
-        url="https://download.pytorch.org/models/retinanet_resnet50_fpn_v2_coco-5905b1c5.pth",
-        transforms=ObjectDetection,
-        meta={
-            **_COMMON_META,
-            "num_params": 38198935,
-            "recipe": "https://github.com/pytorch/vision/pull/5756",
-            "_metrics": {
-                "COCO-val2017": {
-                    "box_map": 41.5,
-                }
-            },
-            "_ops": 152.238,
-            "_file_size": 146.037,
-            "_docs": """These weights were produced using an enhanced training recipe to boost the model accuracy.""",
-        },
-    )
-    DEFAULT = COCO_V1
-
-
 def retinanet_resnet50_fpn(
     *,
-    weights: Optional[RetinaNet_ResNet50_FPN_Weights] = None,
-    progress: bool = True,
     num_classes: Optional[int] = None,
-    weights_backbone: Optional[ResNet50_Weights] = ResNet50_Weights.IMAGENET1K_V1,
     trainable_backbone_layers: Optional[int] = None,
     **kwargs: Any,
 ) -> RetinaNet:
@@ -788,40 +732,25 @@ def retinanet_resnet50_fpn(
     .. autoclass:: torchvision.models.detection.RetinaNet_ResNet50_FPN_Weights
         :members:
     """
-    weights = RetinaNet_ResNet50_FPN_Weights.verify(weights)
-    weights_backbone = ResNet50_Weights.verify(weights_backbone)
-
-    if weights is not None:
-        weights_backbone = None
-        num_classes = _ovewrite_value_param("num_classes", num_classes, len(weights.meta["categories"]))
-    elif num_classes is None:
+    if num_classes is None:
         num_classes = 91
 
-    is_trained = weights is not None or weights_backbone is not None
-    trainable_backbone_layers = _validate_trainable_layers(is_trained, trainable_backbone_layers, 5, 3)
-    norm_layer = misc_nn_ops.FrozenBatchNorm2d if is_trained else nn.BatchNorm2d
+    trainable_backbone_layers = 0
+    norm_layer = nn.BatchNorm2d
 
-    backbone = resnet50(weights=weights_backbone, progress=progress, norm_layer=norm_layer)
+    backbone = resnet50(norm_layer=norm_layer)
     # skip P2 because it generates too many anchors (according to their paper)
     backbone = _resnet_fpn_extractor(
         backbone, trainable_backbone_layers, returned_layers=[2, 3, 4], extra_blocks=LastLevelP6P7(256, 256)
     )
     model = RetinaNet(backbone, num_classes, **kwargs)
 
-    if weights is not None:
-        model.load_state_dict(weights.get_state_dict(progress=progress, check_hash=True))
-        if weights == RetinaNet_ResNet50_FPN_Weights.COCO_V1:
-            overwrite_eps(model, 0.0)
-
     return model
 
 
 def retinanet_resnet50_fpn_v2(
     *,
-    weights: Optional[RetinaNet_ResNet50_FPN_V2_Weights] = None,
-    progress: bool = True,
     num_classes: Optional[int] = None,
-    weights_backbone: Optional[ResNet50_Weights] = None,
     trainable_backbone_layers: Optional[int] = None,
     **kwargs: Any,
 ) -> RetinaNet:
@@ -856,19 +785,12 @@ def retinanet_resnet50_fpn_v2(
     .. autoclass:: torchvision.models.detection.RetinaNet_ResNet50_FPN_V2_Weights
         :members:
     """
-    weights = RetinaNet_ResNet50_FPN_V2_Weights.verify(weights)
-    weights_backbone = ResNet50_Weights.verify(weights_backbone)
-
-    if weights is not None:
-        weights_backbone = None
-        num_classes = _ovewrite_value_param("num_classes", num_classes, len(weights.meta["categories"]))
-    elif num_classes is None:
+    if not num_classes:
         num_classes = 91
 
-    is_trained = weights is not None or weights_backbone is not None
-    trainable_backbone_layers = _validate_trainable_layers(is_trained, trainable_backbone_layers, 5, 3)
+    trainable_backbone_layers = 0
 
-    backbone = resnet50(weights=weights_backbone, progress=progress)
+    backbone = resnet50()
     backbone = _resnet_fpn_extractor(
         backbone, trainable_backbone_layers, returned_layers=[2, 3, 4], extra_blocks=LastLevelP6P7(2048, 256)
     )
@@ -881,8 +803,5 @@ def retinanet_resnet50_fpn_v2(
     )
     head.regression_head._loss_type = "giou"
     model = RetinaNet(backbone, num_classes, anchor_generator=anchor_generator, head=head, **kwargs)
-
-    if weights is not None:
-        model.load_state_dict(weights.get_state_dict(progress=progress, check_hash=True))
 
     return model

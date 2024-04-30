@@ -1,13 +1,11 @@
+from .model import Model
+
 from collections import OrderedDict
-from functools import partial
-from typing import Any, Callable, List, Optional, Type, Union
 
 import torch
 import torch.nn as nn
 
-from .weights import Weights, WeightsEnum
-
-class UNet(nn.Module):
+class UNet(Model):
 
     def __init__(self, in_channels=3, out_channels=1, init_features=32):
         super(UNet, self).__init__()
@@ -101,22 +99,5 @@ class UNet(nn.Module):
         )
 
 
-class UNet_Weights(WeightsEnum):
-    TCGA_LGG = Weights(
-        url=None,
-        transforms=None,
-        meta={
-            "_docs": 'These weights are obtained from <https://github.com/mateuszbuda/brain-segmentation-pytorch/tree/master>.'
-        }
-    )
-    DEFAULT = TCGA_LGG
-
-
-def unet(*, weights: Optional[UNet_Weights] = None) -> UNet:
-
-    model = UNet()
-
-    if weights is not None:
-        model.load_state_dict(weights.get_state_dict(path='./weights/unet.pt'))
-
-    return model
+def unet() -> UNet:
+    return UNet()

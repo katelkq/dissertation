@@ -1,15 +1,15 @@
-from src.models.resnet import resnet50
+from src.models.vision_transformer import vit_b_16
 
 import torch
 
 def test_model_initialization():
-    assert resnet50()
+    assert vit_b_16()
 
 def test_weights_initialization():
-    model1 = resnet50()
+    model1 = vit_b_16()
     model1.randomize_weights(seed=42)
 
-    model2 = resnet50()
+    model2 = vit_b_16()
     model2.randomize_weights(seed=42)
 
     for param1, param2 in zip(model1.parameters(), model2.parameters()):

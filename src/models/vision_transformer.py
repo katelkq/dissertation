@@ -1,25 +1,17 @@
+from .model import Model
+
 import math
 from collections import OrderedDict
 from functools import partial
-from typing import Any, Callable, Dict, List, NamedTuple, Optional
+from typing import Any, Callable, List, NamedTuple, Optional
 
 import torch
 import torch.nn as nn
 from torchvision.ops.misc import Conv2dNormActivation, MLP
 
-from .transforms import ImageClassification, InterpolationMode
-from .weights import Weights, WeightsEnum
-from ._meta import _IMAGENET_CATEGORIES
-from ._utils import _ovewrite_named_param
-
 
 __all__ = [
     "VisionTransformer",
-    "ViT_B_16_Weights",
-    "ViT_B_32_Weights",
-    "ViT_L_16_Weights",
-    "ViT_L_32_Weights",
-    "ViT_H_14_Weights",
     "vit_b_16",
     "vit_b_32",
     "vit_l_16",
@@ -156,7 +148,7 @@ class Encoder(nn.Module):
         return self.ln(self.layers(self.dropout(input)))
 
 
-class VisionTransformer(nn.Module):
+class VisionTransformer(Model):
     """Vision Transformer as per https://arxiv.org/abs/2010.11929."""
 
     def __init__(
@@ -309,14 +301,9 @@ def _vision_transformer(
     num_heads: int,
     hidden_dim: int,
     mlp_dim: int,
-    weights: Optional[WeightsEnum],
-    progress: bool,
     **kwargs: Any,
 ) -> VisionTransformer:
-    if weights is not None:
-        _ovewrite_named_param(kwargs, "num_classes", len(weights.meta["categories"]))
-        assert weights.meta["min_size"][0] == weights.meta["min_size"][1]
-        _ovewrite_named_param(kwargs, "image_size", weights.meta["min_size"][0])
+    
     image_size = kwargs.pop("image_size", 224)
 
     model = VisionTransformer(
@@ -329,292 +316,10 @@ def _vision_transformer(
         **kwargs,
     )
 
-    if weights:
-        model.load_state_dict(weights.get_state_dict(progress=progress, check_hash=True))
-
     return model
 
 
-_COMMON_META: Dict[str, Any] = {
-    "categories": _IMAGENET_CATEGORIES,
-}
-
-_COMMON_SWAG_META = {
-    **_COMMON_META,
-    "recipe": "https://github.com/facebookresearch/SWAG",
-    "license": "https://github.com/facebookresearch/SWAG/blob/main/LICENSE",
-}
-
-
-class ViT_B_16_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/vit_b_16-c867db91.pth",
-        transforms=partial(ImageClassification, crop_size=224),
-        meta={
-            **_COMMON_META,
-            "num_params": 86567656,
-            "min_size": (224, 224),
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#vit_b_16",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 81.072,
-                    "acc@5": 95.318,
-                }
-            },
-            "_ops": 17.564,
-            "_file_size": 330.285,
-            "_docs": """
-                These weights were trained from scratch by using a modified version of `DeIT
-                <https://arxiv.org/abs/2012.12877>`_'s training recipe.
-            """,
-        },
-    )
-    IMAGENET1K_SWAG_E2E_V1 = Weights(
-        url="https://download.pytorch.org/models/vit_b_16_swag-9ac1b537.pth",
-        transforms=partial(
-            ImageClassification,
-            crop_size=384,
-            resize_size=384,
-            interpolation=InterpolationMode.BICUBIC,
-        ),
-        meta={
-            **_COMMON_SWAG_META,
-            "num_params": 86859496,
-            "min_size": (384, 384),
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 85.304,
-                    "acc@5": 97.650,
-                }
-            },
-            "_ops": 55.484,
-            "_file_size": 331.398,
-            "_docs": """
-                These weights are learnt via transfer learning by end-to-end fine-tuning the original
-                `SWAG <https://arxiv.org/abs/2201.08371>`_ weights on ImageNet-1K data.
-            """,
-        },
-    )
-    IMAGENET1K_SWAG_LINEAR_V1 = Weights(
-        url="https://download.pytorch.org/models/vit_b_16_lc_swag-4e70ced5.pth",
-        transforms=partial(
-            ImageClassification,
-            crop_size=224,
-            resize_size=224,
-            interpolation=InterpolationMode.BICUBIC,
-        ),
-        meta={
-            **_COMMON_SWAG_META,
-            "recipe": "https://github.com/pytorch/vision/pull/5793",
-            "num_params": 86567656,
-            "min_size": (224, 224),
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 81.886,
-                    "acc@5": 96.180,
-                }
-            },
-            "_ops": 17.564,
-            "_file_size": 330.285,
-            "_docs": """
-                These weights are composed of the original frozen `SWAG <https://arxiv.org/abs/2201.08371>`_ trunk
-                weights and a linear classifier learnt on top of them trained on ImageNet-1K data.
-            """,
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-class ViT_B_32_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/vit_b_32-d86f8d99.pth",
-        transforms=partial(ImageClassification, crop_size=224),
-        meta={
-            **_COMMON_META,
-            "num_params": 88224232,
-            "min_size": (224, 224),
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#vit_b_32",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 75.912,
-                    "acc@5": 92.466,
-                }
-            },
-            "_ops": 4.409,
-            "_file_size": 336.604,
-            "_docs": """
-                These weights were trained from scratch by using a modified version of `DeIT
-                <https://arxiv.org/abs/2012.12877>`_'s training recipe.
-            """,
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-class ViT_L_16_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/vit_l_16-852ce7e3.pth",
-        transforms=partial(ImageClassification, crop_size=224, resize_size=242),
-        meta={
-            **_COMMON_META,
-            "num_params": 304326632,
-            "min_size": (224, 224),
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#vit_l_16",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 79.662,
-                    "acc@5": 94.638,
-                }
-            },
-            "_ops": 61.555,
-            "_file_size": 1161.023,
-            "_docs": """
-                These weights were trained from scratch by using a modified version of TorchVision's
-                `new training recipe
-                <https://pytorch.org/blog/how-to-train-state-of-the-art-models-using-torchvision-latest-primitives/>`_.
-            """,
-        },
-    )
-    IMAGENET1K_SWAG_E2E_V1 = Weights(
-        url="https://download.pytorch.org/models/vit_l_16_swag-4f3808c9.pth",
-        transforms=partial(
-            ImageClassification,
-            crop_size=512,
-            resize_size=512,
-            interpolation=InterpolationMode.BICUBIC,
-        ),
-        meta={
-            **_COMMON_SWAG_META,
-            "num_params": 305174504,
-            "min_size": (512, 512),
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 88.064,
-                    "acc@5": 98.512,
-                }
-            },
-            "_ops": 361.986,
-            "_file_size": 1164.258,
-            "_docs": """
-                These weights are learnt via transfer learning by end-to-end fine-tuning the original
-                `SWAG <https://arxiv.org/abs/2201.08371>`_ weights on ImageNet-1K data.
-            """,
-        },
-    )
-    IMAGENET1K_SWAG_LINEAR_V1 = Weights(
-        url="https://download.pytorch.org/models/vit_l_16_lc_swag-4d563306.pth",
-        transforms=partial(
-            ImageClassification,
-            crop_size=224,
-            resize_size=224,
-            interpolation=InterpolationMode.BICUBIC,
-        ),
-        meta={
-            **_COMMON_SWAG_META,
-            "recipe": "https://github.com/pytorch/vision/pull/5793",
-            "num_params": 304326632,
-            "min_size": (224, 224),
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 85.146,
-                    "acc@5": 97.422,
-                }
-            },
-            "_ops": 61.555,
-            "_file_size": 1161.023,
-            "_docs": """
-                These weights are composed of the original frozen `SWAG <https://arxiv.org/abs/2201.08371>`_ trunk
-                weights and a linear classifier learnt on top of them trained on ImageNet-1K data.
-            """,
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-class ViT_L_32_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/vit_l_32-c7638314.pth",
-        transforms=partial(ImageClassification, crop_size=224),
-        meta={
-            **_COMMON_META,
-            "num_params": 306535400,
-            "min_size": (224, 224),
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#vit_l_32",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 76.972,
-                    "acc@5": 93.07,
-                }
-            },
-            "_ops": 15.378,
-            "_file_size": 1169.449,
-            "_docs": """
-                These weights were trained from scratch by using a modified version of `DeIT
-                <https://arxiv.org/abs/2012.12877>`_'s training recipe.
-            """,
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-class ViT_H_14_Weights(WeightsEnum):
-    IMAGENET1K_SWAG_E2E_V1 = Weights(
-        url="https://download.pytorch.org/models/vit_h_14_swag-80465313.pth",
-        transforms=partial(
-            ImageClassification,
-            crop_size=518,
-            resize_size=518,
-            interpolation=InterpolationMode.BICUBIC,
-        ),
-        meta={
-            **_COMMON_SWAG_META,
-            "num_params": 633470440,
-            "min_size": (518, 518),
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 88.552,
-                    "acc@5": 98.694,
-                }
-            },
-            "_ops": 1016.717,
-            "_file_size": 2416.643,
-            "_docs": """
-                These weights are learnt via transfer learning by end-to-end fine-tuning the original
-                `SWAG <https://arxiv.org/abs/2201.08371>`_ weights on ImageNet-1K data.
-            """,
-        },
-    )
-    IMAGENET1K_SWAG_LINEAR_V1 = Weights(
-        url="https://download.pytorch.org/models/vit_h_14_lc_swag-c1eb923e.pth",
-        transforms=partial(
-            ImageClassification,
-            crop_size=224,
-            resize_size=224,
-            interpolation=InterpolationMode.BICUBIC,
-        ),
-        meta={
-            **_COMMON_SWAG_META,
-            "recipe": "https://github.com/pytorch/vision/pull/5793",
-            "num_params": 632045800,
-            "min_size": (224, 224),
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 85.708,
-                    "acc@5": 97.730,
-                }
-            },
-            "_ops": 167.295,
-            "_file_size": 2411.209,
-            "_docs": """
-                These weights are composed of the original frozen `SWAG <https://arxiv.org/abs/2201.08371>`_ trunk
-                weights and a linear classifier learnt on top of them trained on ImageNet-1K data.
-            """,
-        },
-    )
-    DEFAULT = IMAGENET1K_SWAG_E2E_V1
-
-
-def vit_b_16(*, weights: Optional[ViT_B_16_Weights] = None, progress: bool = True, **kwargs: Any) -> VisionTransformer:
+def vit_b_16(**kwargs: Any) -> VisionTransformer:
     """
     Constructs a vit_b_16 architecture from
     `An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale <https://arxiv.org/abs/2010.11929>`_.
@@ -632,21 +337,17 @@ def vit_b_16(*, weights: Optional[ViT_B_16_Weights] = None, progress: bool = Tru
     .. autoclass:: torchvision.models.ViT_B_16_Weights
         :members:
     """
-    weights = ViT_B_16_Weights.verify(weights)
-
     return _vision_transformer(
         patch_size=16,
         num_layers=12,
         num_heads=12,
         hidden_dim=768,
         mlp_dim=3072,
-        weights=weights,
-        progress=progress,
         **kwargs,
     )
 
 
-def vit_b_32(*, weights: Optional[ViT_B_32_Weights] = None, progress: bool = True, **kwargs: Any) -> VisionTransformer:
+def vit_b_32(**kwargs: Any) -> VisionTransformer:
     """
     Constructs a vit_b_32 architecture from
     `An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale <https://arxiv.org/abs/2010.11929>`_.
@@ -664,21 +365,17 @@ def vit_b_32(*, weights: Optional[ViT_B_32_Weights] = None, progress: bool = Tru
     .. autoclass:: torchvision.models.ViT_B_32_Weights
         :members:
     """
-    weights = ViT_B_32_Weights.verify(weights)
-
     return _vision_transformer(
         patch_size=32,
         num_layers=12,
         num_heads=12,
         hidden_dim=768,
         mlp_dim=3072,
-        weights=weights,
-        progress=progress,
         **kwargs,
     )
 
 
-def vit_l_16(*, weights: Optional[ViT_L_16_Weights] = None, progress: bool = True, **kwargs: Any) -> VisionTransformer:
+def vit_l_16(**kwargs: Any) -> VisionTransformer:
     """
     Constructs a vit_l_16 architecture from
     `An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale <https://arxiv.org/abs/2010.11929>`_.
@@ -696,21 +393,17 @@ def vit_l_16(*, weights: Optional[ViT_L_16_Weights] = None, progress: bool = Tru
     .. autoclass:: torchvision.models.ViT_L_16_Weights
         :members:
     """
-    weights = ViT_L_16_Weights.verify(weights)
-
     return _vision_transformer(
         patch_size=16,
         num_layers=24,
         num_heads=16,
         hidden_dim=1024,
         mlp_dim=4096,
-        weights=weights,
-        progress=progress,
         **kwargs,
     )
 
 
-def vit_l_32(*, weights: Optional[ViT_L_32_Weights] = None, progress: bool = True, **kwargs: Any) -> VisionTransformer:
+def vit_l_32(**kwargs: Any) -> VisionTransformer:
     """
     Constructs a vit_l_32 architecture from
     `An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale <https://arxiv.org/abs/2010.11929>`_.
@@ -728,21 +421,17 @@ def vit_l_32(*, weights: Optional[ViT_L_32_Weights] = None, progress: bool = Tru
     .. autoclass:: torchvision.models.ViT_L_32_Weights
         :members:
     """
-    weights = ViT_L_32_Weights.verify(weights)
-
     return _vision_transformer(
         patch_size=32,
         num_layers=24,
         num_heads=16,
         hidden_dim=1024,
         mlp_dim=4096,
-        weights=weights,
-        progress=progress,
         **kwargs,
     )
 
 
-def vit_h_14(*, weights: Optional[ViT_H_14_Weights] = None, progress: bool = True, **kwargs: Any) -> VisionTransformer:
+def vit_h_14(**kwargs: Any) -> VisionTransformer:
     """
     Constructs a vit_h_14 architecture from
     `An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale <https://arxiv.org/abs/2010.11929>`_.
@@ -760,16 +449,12 @@ def vit_h_14(*, weights: Optional[ViT_H_14_Weights] = None, progress: bool = Tru
     .. autoclass:: torchvision.models.ViT_H_14_Weights
         :members:
     """
-    weights = ViT_H_14_Weights.verify(weights)
-
     return _vision_transformer(
         patch_size=14,
         num_layers=32,
         num_heads=16,
         hidden_dim=1280,
         mlp_dim=5120,
-        weights=weights,
-        progress=progress,
         **kwargs,
     )
 

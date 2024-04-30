@@ -15,7 +15,7 @@ from models.layers import maxpool2d, avgpool2d, linear, conv1d, conv2d, deconv2d
 from models.resnet import resnet50, ResNet50_Weights
 from models.unet import unet, UNet_Weights
 from models.vision_transformer import vit_b_16, ViT_B_16_Weights
-from models.detection.retinanet import retinanet_resnet50_fpn, RetinaNet_ResNet50_FPN_Weights
+from src.models.retinanet import retinanet_resnet50_fpn, RetinaNet_ResNet50_FPN_Weights
 from models.swin_transformer import swin_b, Swin_B_Weights
 from models.vgg import vgg11, VGG11_BN_Weights
 from models.mobilenet import mobilenet_v2, MobileNet_V2_Weights
@@ -158,84 +158,31 @@ def get_args():
     
     """
     parser.add_argument(
-        '--device',
-        type=str,
-        default='cpu',
-        help='device for training (default: cpu)',
-    )
-    parser.add_argument(
         '--model',
         type=str,
         choices=set().union(SUPPORTED_LAYERS.keys(), SUPPORTED_MODELS.keys()),
         required=True,
         help='name of the model to use'
     )
-    parser.add_argument(
-        '--pretrained',
-        action='store_true',
-        help='whether to load pretrained weights for the model',
-    )
-    parser.add_argument(
-        '--weights-path',
-        type=str,
-        help='path to the weight file (if applicable)',
-    )
-    parser.add_argument(
-        '--real-data',
-        action='store_true',
-        help='whether to feed a real dataset to the model',
-    )
-    parser.add_argument(
-        '--batch-size',
-        type=int,
-        default=1,
-        help='if you want to generate random dataset, how many samples do you want to generate?',
-    )
+    
     parser.add_argument(
         '--num-samples',
         type=int,
         default=100,
         help='if you want to generate random dataset, how many samples do you want to generate?',
     )
-    parser.add_argument(
-        '--data-path',
-        type=str,
-        help='whether to generate random dataset to feed to the model',
-    )
-    parser.add_argument(
-        '--kernel-size',
-        type=int,
-        help='if you want to generate random dataset, how many samples do you want to generate?',
-    )
-    parser.add_argument(
-        '--in-features',
-        type=int,
-        help='if you want to generate random dataset, how many samples do you want to generate?',
-    )
-    parser.add_argument(
-        '--out-features',
-        type=int,
-        help='if you want to generate random dataset, how many samples do you want to generate?',
-    )
-    parser.add_argument(
-        '--in-channels',
-        type=int,
-        help='if you want to generate random dataset, how many samples do you want to generate?',
-    )
-    parser.add_argument(
-        '--out-channels',
-        type=int,
-        help='if you want to generate random dataset, how many samples do you want to generate?',
-    )
-    parser.add_argument(
-        '--dim',
-        type=int,
-        help='if you want to generate random dataset, how many samples do you want to generate?',
-    )
+    
     parser.add_argument(
         '--input-shape',
         type=int,
         nargs='+',
+        help='if you want to generate random dataset, how many samples do you want to generate?',
+    )
+
+    parser.add_argument(
+        '--batch-size',
+        type=int,
+        default=1,
         help='if you want to generate random dataset, how many samples do you want to generate?',
     )
 
