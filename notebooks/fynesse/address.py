@@ -69,6 +69,9 @@ def make_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], featured_
 
     master_list = list(map(partial(aggregate, bin_size=bin_size), map(partial(pad_to_length, n=max_len), master_list)))
 
+    if len(featured_events) == 1:
+        return np.row_stack(master_list)
+    
     features = list()
 
     for i, model in enumerate(models):
