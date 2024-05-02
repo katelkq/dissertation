@@ -1,7 +1,7 @@
 from functools import partial
 import hashlib
 import math
-from typing import List
+from typing import List, Dict
 
 import numpy as np
 import pandas as pd
@@ -32,7 +32,7 @@ def make_timeseries(df: pd.DataFrame, event: str) -> np.ndarray:
     ticks = filtered(df, event='cycles')
     samples = filtered(df, event=event)
     merged = pd.merge(ticks, samples, how='left', on='timestamp')
-    return merged['period_y'].fillna(0).values
+    return merged['period_y'].fillna(0).to_numpy(copy=True)
 
 
 def aggregate_timeseries(df: pd.DataFrame, event: str, bin_size: int) -> np.ndarray:
@@ -47,7 +47,37 @@ def aggregate_timeseries(df: pd.DataFrame, event: str, bin_size: int) -> np.ndar
     return timeseries
 
 
-def make_features(inferences: List[pd.DataFrame], event: str, bin_size: int) -> np.ndarray:
+def aggregate(timeseries: np.ndarray, bin_size: int) -> np.ndarray:
+    '''
+    '''
+    timeseries = np.pad(timeseries, (0, math.ceil(len(timeseries)/bin_size) * bin_size - len(timeseries)), mode='constant')
+    timeseries = np.sum(timeseries.reshape(-1, bin_size), axis=1)
+    return timeseries
+
+
+def make_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], featured_events: List[str], n_bins: int, models: List[str]) -> np.ndarray:
+    '''Order matters
+    '''
+    master_list = list()
+
+    for model in models:
+        for event in featured_events:
+            master_list += master_dict[model][event]
+
+    max_len = max(map(len, master_list))
+    bin_size = max_len // n_bins + bool(max_len % n_bins)
+
+    master_list = list(map(partial(aggregate, bin_size=bin_size), map(partial(pad_to_length, n=max_len), master_list)))
+
+    features = list()
+
+    for i, model in enumerate(models):
+        features.append(np.column_stack([master_list[i*200+j*100:i*200+(j+1)*100] for j in range(len(featured_events))]))
+
+    return np.row_stack(features)
+
+
+def make_features_deprecated(inferences: List[pd.DataFrame], event: str, bin_size: int) -> np.ndarray:
     '''TODO
     '''
     aggregator = partial(aggregate_timeseries, event=event, bin_size=bin_size)

@@ -164,3 +164,9 @@ cython_debug/
 
 # experimental results
 experiments/results
+
+# processed data
+notebooks/data
+
+# output figures
+notebooks/figures

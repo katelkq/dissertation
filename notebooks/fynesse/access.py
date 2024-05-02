@@ -14,12 +14,12 @@ def _load_raw(filepath: str) -> pd.DataFrame:
     # TODO: make it make sense, please
     # a hacky way of dealing with different row formats
     try:
-        df = pd.read_csv(filepath, usecols=[1,2,3,4], delim_whitespace=True, names=columns)
+        df = pd.read_csv(filepath, usecols=[1,2,3,4], sep='\s+', names=columns)
         if len(df) == 0:
             return df
         
     except:
-        df = pd.read_csv(filepath, usecols=[1,2,3,4], delim_whitespace=True, header=None)
+        df = pd.read_csv(filepath, usecols=[1,2,3,4], sep='\s+', header=None)
         df.columns = columns[1:5]
 
     df['timestamp'] = pd.to_numeric(df['timestamp'].apply(lambda x: x.split(':')[0]))
