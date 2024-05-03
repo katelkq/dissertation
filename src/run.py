@@ -29,21 +29,21 @@ def get_args():
         '--num-samples',
         type=int,
         default=100,
-        help='the number of samples to generate for the random dataset',
+        help='the number of samples to generate for the random dataset. default is 100',
     )
     
     parser.add_argument(
         '--batch-size',
         type=int,
         default=1,
-        help='the batch size of the dataloader',
+        help='the batch size of the dataloader. default is 1',
     )
 
     parser.add_argument(
         '--seed',
         type=int,
         default=42,
-        help='the random seed value to use',
+        help='the random seed value to use. default is 42',
     )
 
     args = parser.parse_args()
