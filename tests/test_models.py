@@ -4,7 +4,7 @@ import torch
 import pytest
 
 
-model_names: list = ['resnet50', 'retinanet', 'unet', 'vitb16']
+model_names: list = list(MODEL_SPECS.keys())
 
 
 @pytest.mark.parametrize("model_name", [*model_names])

@@ -1,3 +1,5 @@
+from .model import Model
+
 import math
 from functools import partial
 from typing import Any, Callable, List, Optional, Tuple
@@ -9,20 +11,9 @@ from torchvision.ops.misc import MLP, Permute
 from torchvision.ops.stochastic_depth import StochasticDepth
 from torchvision.transforms import InterpolationMode
 
-from .transforms import ImageClassification
-from .weights import Weights, WeightsEnum
-from ._meta import _IMAGENET_CATEGORIES
-from ._utils import _ovewrite_named_param, handle_legacy_interface
-
 
 __all__ = [
     "SwinTransformer",
-    "Swin_T_Weights",
-    "Swin_S_Weights",
-    "Swin_B_Weights",
-    "Swin_V2_T_Weights",
-    "Swin_V2_S_Weights",
-    "Swin_V2_B_Weights",
     "swin_t",
     "swin_s",
     "swin_b",
@@ -502,7 +493,7 @@ class SwinTransformerBlockV2(SwinTransformerBlock):
         return x
 
 
-class SwinTransformer(nn.Module):
+class SwinTransformer(Model):
     """
     Implements Swin Transformer from the `"Swin Transformer: Hierarchical Vision Transformer using
     Shifted Windows" <https://arxiv.org/abs/2103.14030>`_ paper.
@@ -617,12 +608,8 @@ def _swin_transformer(
     num_heads: List[int],
     window_size: List[int],
     stochastic_depth_prob: float,
-    weights: Optional[WeightsEnum],
-    progress: bool,
     **kwargs: Any,
 ) -> SwinTransformer:
-    if weights is not None:
-        _ovewrite_named_param(kwargs, "num_classes", len(weights.meta["categories"]))
 
     model = SwinTransformer(
         patch_size=patch_size,
@@ -634,168 +621,10 @@ def _swin_transformer(
         **kwargs,
     )
 
-    if weights is not None:
-        model.load_state_dict(weights.get_state_dict(progress=progress, check_hash=True))
-
     return model
 
 
-_COMMON_META = {
-    "categories": _IMAGENET_CATEGORIES,
-}
-
-
-class Swin_T_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/swin_t-704ceda3.pth",
-        transforms=partial(
-            ImageClassification, crop_size=224, resize_size=232, interpolation=InterpolationMode.BICUBIC
-        ),
-        meta={
-            **_COMMON_META,
-            "num_params": 28288354,
-            "min_size": (224, 224),
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#swintransformer",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 81.474,
-                    "acc@5": 95.776,
-                }
-            },
-            "_ops": 4.491,
-            "_file_size": 108.19,
-            "_docs": """These weights reproduce closely the results of the paper using a similar training recipe.""",
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-class Swin_S_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/swin_s-5e29d889.pth",
-        transforms=partial(
-            ImageClassification, crop_size=224, resize_size=246, interpolation=InterpolationMode.BICUBIC
-        ),
-        meta={
-            **_COMMON_META,
-            "num_params": 49606258,
-            "min_size": (224, 224),
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#swintransformer",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 83.196,
-                    "acc@5": 96.360,
-                }
-            },
-            "_ops": 8.741,
-            "_file_size": 189.786,
-            "_docs": """These weights reproduce closely the results of the paper using a similar training recipe.""",
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-class Swin_B_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/swin_b-68c6b09e.pth",
-        transforms=partial(
-            ImageClassification, crop_size=224, resize_size=238, interpolation=InterpolationMode.BICUBIC
-        ),
-        meta={
-            **_COMMON_META,
-            "num_params": 87768224,
-            "min_size": (224, 224),
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#swintransformer",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 83.582,
-                    "acc@5": 96.640,
-                }
-            },
-            "_ops": 15.431,
-            "_file_size": 335.364,
-            "_docs": """These weights reproduce closely the results of the paper using a similar training recipe.""",
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-class Swin_V2_T_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/swin_v2_t-b137f0e2.pth",
-        transforms=partial(
-            ImageClassification, crop_size=256, resize_size=260, interpolation=InterpolationMode.BICUBIC
-        ),
-        meta={
-            **_COMMON_META,
-            "num_params": 28351570,
-            "min_size": (256, 256),
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#swintransformer-v2",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 82.072,
-                    "acc@5": 96.132,
-                }
-            },
-            "_ops": 5.94,
-            "_file_size": 108.626,
-            "_docs": """These weights reproduce closely the results of the paper using a similar training recipe.""",
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-class Swin_V2_S_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/swin_v2_s-637d8ceb.pth",
-        transforms=partial(
-            ImageClassification, crop_size=256, resize_size=260, interpolation=InterpolationMode.BICUBIC
-        ),
-        meta={
-            **_COMMON_META,
-            "num_params": 49737442,
-            "min_size": (256, 256),
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#swintransformer-v2",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 83.712,
-                    "acc@5": 96.816,
-                }
-            },
-            "_ops": 11.546,
-            "_file_size": 190.675,
-            "_docs": """These weights reproduce closely the results of the paper using a similar training recipe.""",
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-class Swin_V2_B_Weights(WeightsEnum):
-    IMAGENET1K_V1 = Weights(
-        url="https://download.pytorch.org/models/swin_v2_b-781e5279.pth",
-        transforms=partial(
-            ImageClassification, crop_size=256, resize_size=272, interpolation=InterpolationMode.BICUBIC
-        ),
-        meta={
-            **_COMMON_META,
-            "num_params": 87930848,
-            "min_size": (256, 256),
-            "recipe": "https://github.com/pytorch/vision/tree/main/references/classification#swintransformer-v2",
-            "_metrics": {
-                "ImageNet-1K": {
-                    "acc@1": 84.112,
-                    "acc@5": 96.864,
-                }
-            },
-            "_ops": 20.325,
-            "_file_size": 336.372,
-            "_docs": """These weights reproduce closely the results of the paper using a similar training recipe.""",
-        },
-    )
-    DEFAULT = IMAGENET1K_V1
-
-
-def swin_t(*, weights: Optional[Swin_T_Weights] = None, progress: bool = True, **kwargs: Any) -> SwinTransformer:
+def swin_t(**kwargs: Any) -> SwinTransformer:
     """
     Constructs a swin_tiny architecture from
     `Swin Transformer: Hierarchical Vision Transformer using Shifted Windows <https://arxiv.org/abs/2103.14030>`_.
@@ -816,7 +645,6 @@ def swin_t(*, weights: Optional[Swin_T_Weights] = None, progress: bool = True, *
     .. autoclass:: torchvision.models.Swin_T_Weights
         :members:
     """
-    weights = Swin_T_Weights.verify(weights)
 
     return _swin_transformer(
         patch_size=[4, 4],
@@ -825,13 +653,11 @@ def swin_t(*, weights: Optional[Swin_T_Weights] = None, progress: bool = True, *
         num_heads=[3, 6, 12, 24],
         window_size=[7, 7],
         stochastic_depth_prob=0.2,
-        weights=weights,
-        progress=progress,
         **kwargs,
     )
 
 
-def swin_s(*, weights: Optional[Swin_S_Weights] = None, progress: bool = True, **kwargs: Any) -> SwinTransformer:
+def swin_s(**kwargs: Any) -> SwinTransformer:
     """
     Constructs a swin_small architecture from
     `Swin Transformer: Hierarchical Vision Transformer using Shifted Windows <https://arxiv.org/abs/2103.14030>`_.
@@ -852,7 +678,6 @@ def swin_s(*, weights: Optional[Swin_S_Weights] = None, progress: bool = True, *
     .. autoclass:: torchvision.models.Swin_S_Weights
         :members:
     """
-    weights = Swin_S_Weights.verify(weights)
 
     return _swin_transformer(
         patch_size=[4, 4],
@@ -861,13 +686,11 @@ def swin_s(*, weights: Optional[Swin_S_Weights] = None, progress: bool = True, *
         num_heads=[3, 6, 12, 24],
         window_size=[7, 7],
         stochastic_depth_prob=0.3,
-        weights=weights,
-        progress=progress,
         **kwargs,
     )
 
 
-def swin_b(*, weights: Optional[Swin_B_Weights] = None, progress: bool = True, **kwargs: Any) -> SwinTransformer:
+def swin_b(**kwargs: Any) -> SwinTransformer:
     """
     Constructs a swin_base architecture from
     `Swin Transformer: Hierarchical Vision Transformer using Shifted Windows <https://arxiv.org/abs/2103.14030>`_.
@@ -888,7 +711,6 @@ def swin_b(*, weights: Optional[Swin_B_Weights] = None, progress: bool = True, *
     .. autoclass:: torchvision.models.Swin_B_Weights
         :members:
     """
-    weights = Swin_B_Weights.verify(weights)
 
     return _swin_transformer(
         patch_size=[4, 4],
@@ -897,13 +719,11 @@ def swin_b(*, weights: Optional[Swin_B_Weights] = None, progress: bool = True, *
         num_heads=[4, 8, 16, 32],
         window_size=[7, 7],
         stochastic_depth_prob=0.5,
-        weights=weights,
-        progress=progress,
         **kwargs,
     )
 
 
-def swin_v2_t(*, weights: Optional[Swin_V2_T_Weights] = None, progress: bool = True, **kwargs: Any) -> SwinTransformer:
+def swin_v2_t(**kwargs: Any) -> SwinTransformer:
     """
     Constructs a swin_v2_tiny architecture from
     `Swin Transformer V2: Scaling Up Capacity and Resolution <https://arxiv.org/abs/2111.09883>`_.
@@ -924,7 +744,6 @@ def swin_v2_t(*, weights: Optional[Swin_V2_T_Weights] = None, progress: bool = T
     .. autoclass:: torchvision.models.Swin_V2_T_Weights
         :members:
     """
-    weights = Swin_V2_T_Weights.verify(weights)
 
     return _swin_transformer(
         patch_size=[4, 4],
@@ -933,15 +752,13 @@ def swin_v2_t(*, weights: Optional[Swin_V2_T_Weights] = None, progress: bool = T
         num_heads=[3, 6, 12, 24],
         window_size=[8, 8],
         stochastic_depth_prob=0.2,
-        weights=weights,
-        progress=progress,
         block=SwinTransformerBlockV2,
         downsample_layer=PatchMergingV2,
         **kwargs,
     )
 
 
-def swin_v2_s(*, weights: Optional[Swin_V2_S_Weights] = None, progress: bool = True, **kwargs: Any) -> SwinTransformer:
+def swin_v2_s(**kwargs: Any) -> SwinTransformer:
     """
     Constructs a swin_v2_small architecture from
     `Swin Transformer V2: Scaling Up Capacity and Resolution <https://arxiv.org/abs/2111.09883>`_.
@@ -962,7 +779,6 @@ def swin_v2_s(*, weights: Optional[Swin_V2_S_Weights] = None, progress: bool = T
     .. autoclass:: torchvision.models.Swin_V2_S_Weights
         :members:
     """
-    weights = Swin_V2_S_Weights.verify(weights)
 
     return _swin_transformer(
         patch_size=[4, 4],
@@ -971,15 +787,13 @@ def swin_v2_s(*, weights: Optional[Swin_V2_S_Weights] = None, progress: bool = T
         num_heads=[3, 6, 12, 24],
         window_size=[8, 8],
         stochastic_depth_prob=0.3,
-        weights=weights,
-        progress=progress,
         block=SwinTransformerBlockV2,
         downsample_layer=PatchMergingV2,
         **kwargs,
     )
 
 
-def swin_v2_b(*, weights: Optional[Swin_V2_B_Weights] = None, progress: bool = True, **kwargs: Any) -> SwinTransformer:
+def swin_v2_b(**kwargs: Any) -> SwinTransformer:
     """
     Constructs a swin_v2_base architecture from
     `Swin Transformer V2: Scaling Up Capacity and Resolution <https://arxiv.org/abs/2111.09883>`_.
@@ -1000,7 +814,6 @@ def swin_v2_b(*, weights: Optional[Swin_V2_B_Weights] = None, progress: bool = T
     .. autoclass:: torchvision.models.Swin_V2_B_Weights
         :members:
     """
-    weights = Swin_V2_B_Weights.verify(weights)
 
     return _swin_transformer(
         patch_size=[4, 4],
@@ -1009,8 +822,6 @@ def swin_v2_b(*, weights: Optional[Swin_V2_B_Weights] = None, progress: bool = T
         num_heads=[4, 8, 16, 32],
         window_size=[8, 8],
         stochastic_depth_prob=0.5,
-        weights=weights,
-        progress=progress,
         block=SwinTransformerBlockV2,
         downsample_layer=PatchMergingV2,
         **kwargs,
