@@ -1,6 +1,6 @@
-MODELS = ['resnet50', 'retinanet', 'unet', 'vitb16']
+MODELS = ['resnet50', 'retinanet', 'unet']
 
-MODELS_EXT = ['mobilenet', 'swint', 'swins', 'swinb', 'vgg11', 'vgg13', 'vgg16', 'vgg19', 'vitb32', 'vitl16', 'vitl32', 'vith14']
+MODELS_EXT = ['mobilenet', 'swint', 'swins', 'swinb', 'vgg11', 'vgg13', 'vgg16', 'vgg19', 'vitb16', 'vitb32', 'vitl16', 'vitl32', 'vith14']
 
 EVENTS = ['instructions',
 'cache-misses',

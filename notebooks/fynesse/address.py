@@ -55,7 +55,7 @@ def aggregate(timeseries: np.ndarray, bin_size: int) -> np.ndarray:
     return timeseries
 
 
-def make_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], featured_events: List[str], n_bins: int, models: List[str]) -> np.ndarray:
+def make_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], featured_events: List[str], n_bins: int, models: List[str], n_samples: int = 100) -> np.ndarray:
     '''Order matters
     '''
     master_list = list()
@@ -75,7 +75,7 @@ def make_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], featured_
     features = list()
 
     for i, model in enumerate(models):
-        features.append(np.column_stack([master_list[i*200+j*100:i*200+(j+1)*100] for j in range(len(featured_events))]))
+        features.append(np.column_stack([master_list[i*200+j*n_samples:i*200+(j+1)*n_samples] for j in range(len(featured_events))]))
 
     return np.row_stack(features)
 
@@ -83,7 +83,7 @@ def make_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], featured_
 def make_features_deprecated(inferences: List[pd.DataFrame], event: str, bin_size: int) -> np.ndarray:
     '''TODO
     '''
-    aggregator = partial(aggregate_timeseries, event=event, bin_size=bin_size)
+    aggregator = partial(make_aggregated_timeseries, event=event, bin_size=bin_size)
     features = list(map(aggregator, inferences))
 
     # TODO: shall we always pad to the maximum observed length?
@@ -93,4 +93,24 @@ def make_features_deprecated(inferences: List[pd.DataFrame], event: str, bin_siz
     return np.row_stack(features)
 
 
+def merge_dict(this_dict, that_dict):
+    '''Merge that into this
+    '''
+    for model in this_dict.keys():
+        for event in this_dict[model].keys():
+            this_dict[model][event] += that_dict[model][event]
+
+    return this_dict
+
+
+def seed_split(X, seed_idx, n_seeds, n_samples=100):
+    train, test = list(), list()
+
+    for i in range(len(X) // n_samples):
+        if i % n_seeds == seed_idx:
+            test.append(X[i*n_samples:(i+1)*n_samples])
+        else:
+            train.append(X[i*n_samples:(i+1)*n_samples])
+
+    return np.concatenate(train), np.concatenate(test)
 
