@@ -35,7 +35,7 @@ def make_timeseries(df: pd.DataFrame, event: str) -> np.ndarray:
     return merged['period_y'].fillna(0).to_numpy(copy=True)
 
 
-def aggregate_timeseries(df: pd.DataFrame, event: str, bin_size: int) -> np.ndarray:
+def make_aggregated_timeseries(df: pd.DataFrame, event: str, bin_size: int) -> np.ndarray:
     '''TODO
     Passing in bin_size=1 results in the same behavior as calling make_timeseries.
     '''
