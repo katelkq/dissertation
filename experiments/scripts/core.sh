@@ -452,4 +452,3 @@ perf record -e '{cycles,fp_arith_inst_retired.scalar_single}:Su' -c 100000 -o ex
 perf script -i experiments/results/unet_f9059_s137.data > experiments/results/unet_f9059_s137.txt
 rm experiments/results/*.data
 gdrive files upload experiments/results/ --recursive
-rm -r experiments/results/
