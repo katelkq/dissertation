@@ -10,7 +10,7 @@ from models.vision_transformer import vit_b_16, vit_b_32, vit_l_16, vit_l_32, vi
 
 MODEL_SPECS = {'resnet50': {'factory-method': resnet50, 'input-shape': (3, 224, 224)},
                'retinanet': {'factory-method': retinanet, 'input-shape': (3, 224, 224)},
-               'unet': {'factory-method': unet, 'input-shape': (3, 224, 224)},
+               'unet': {'factory-method': unet, 'input-shape': (3, 256, 256)},
 
                'mobilenet': {'factory-method': mobilenet, 'input-shape': (3, 224, 224)},
 
