@@ -163,7 +163,7 @@ cython_debug/
 .DS_Store
 
 # experimental results
-experiments/results
+# experiments/results
 
 # processed data
 notebooks/data
