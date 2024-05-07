@@ -161,12 +161,15 @@ cython_debug/
 
 # random files
 .DS_Store
+temp.py
 
 # experimental results
-# experiments/results
+experiments/results
 
 # processed data
 notebooks/data
 
 # output figures
 notebooks/figures
+
+notebooks/lightning_logs

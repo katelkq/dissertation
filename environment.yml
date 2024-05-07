@@ -125,4 +125,6 @@ dependencies:
   - zipp=3.17.0=pyhd8ed1ab_0
   - zlib=1.2.13=h18a0788_1
   - zstd=1.5.5=hd90d995_1
+  - pip:
+      - dtaidistance==2.3.11
 prefix: /Users/kate/anaconda3/envs/diss
