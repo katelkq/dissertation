@@ -55,7 +55,7 @@ def aggregate(timeseries: np.ndarray, bin_size: int) -> np.ndarray:
     return timeseries
 
 
-def make_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], featured_events: List[str], n_bins: int, models: List[str], n_samples: int = 100) -> np.ndarray:
+def make_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], featured_events: List[str], n_bins: int, models: List[str], n_samples: int = 100, bin_size: int = None) -> np.ndarray:
     '''Order matters
     '''
     master_list = list()
@@ -65,7 +65,9 @@ def make_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], featured_
             master_list += master_dict[model][event]
 
     max_len = max(map(len, master_list))
-    bin_size = max_len // n_bins + bool(max_len % n_bins)
+
+    if n_bins:
+        bin_size = max_len // n_bins + bool(max_len % n_bins)
 
     master_list = list(map(partial(aggregate, bin_size=bin_size), map(partial(pad_to_length, n=max_len), master_list)))
 
@@ -75,7 +77,32 @@ def make_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], featured_
     features = list()
 
     for i, model in enumerate(models):
-        features.append(np.column_stack([master_list[i*200+j*n_samples:i*200+(j+1)*n_samples] for j in range(len(featured_events))]))
+        features.append(np.column_stack([master_list[i*len(featured_events)*n_samples+j*n_samples:i*len(featured_events)*n_samples+(j+1)*n_samples] for j in range(len(featured_events))]))
+
+    return np.row_stack(features)
+
+
+def make_transformer_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]], events: List[str], models: List[str], n_samples: int = 500, bin_size: int = None) -> np.ndarray:
+    '''Order matters
+    '''
+    master_list = list()
+
+    for model in models:
+        for event in events:
+            master_list += master_dict[model][event]
+
+    max_len = max(map(len, master_list))
+
+    master_list = list(map(partial(aggregate, bin_size=bin_size), map(partial(pad_to_length, n=max_len), master_list)))
+
+    if len(events) == 1:
+        # TODO: add new dim
+        return np.row_stack(master_list)
+    
+    features = list()
+
+    for i, model in enumerate(models):
+        features.append(np.stack([master_list[i*len(events)*n_samples+j*n_samples:i*len(events)*n_samples+(j+1)*n_samples] for j in range(len(events))], axis=-1))
 
     return np.row_stack(features)
 
