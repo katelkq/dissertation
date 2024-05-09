@@ -96,7 +96,7 @@ def make_transformer_features(master_dict: Dict[str, Dict[str, List[np.ndarray]]
     master_list = list(map(partial(aggregate, bin_size=bin_size), map(partial(pad_to_length, n=max_len), master_list)))
 
     if len(events) == 1:
-        # TODO: add new dim
+        # TODO: add new dim?
         return np.row_stack(master_list)
     
     features = list()
