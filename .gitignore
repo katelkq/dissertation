@@ -171,5 +171,3 @@ notebooks/data
 
 # output figures
 notebooks/figures
-
-notebooks/lightning_logs
